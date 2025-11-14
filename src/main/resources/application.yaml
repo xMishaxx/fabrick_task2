@@ -9,6 +9,11 @@ spring:
   main:
     web-application-type: servlet
 
+application:
+  aviation-weather:
+    api:
+      base-url: https://aviationweather.gov/api/data
+
 logging:
   level:
     com.example.fabrick_task2: DEBUG
