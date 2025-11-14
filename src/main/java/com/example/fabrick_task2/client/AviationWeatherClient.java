@@ -52,7 +52,7 @@ public class AviationWeatherClient {
 
     public StationInfoResponse getStationInfo(String stationId) {
         String url = UriComponentsBuilder.fromHttpUrl(apiProperties.getBaseUrl())
-                .path("/station")
+                .path("/stationinfo")
                 .queryParam("ids", stationId)
                 .queryParam("format", "json")
                 .toUriString();
