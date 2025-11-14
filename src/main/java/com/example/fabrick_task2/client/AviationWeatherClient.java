@@ -33,21 +33,26 @@ public class AviationWeatherClient {
 
         log.debug("Calling Aviation Weather API for airport: {}", icaoCode);
 
-        ResponseEntity<List<AirportInfoResponse>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<AirportInfoResponse>>() {
-                }
-        );
+        try {
+            ResponseEntity<List<AirportInfoResponse>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<AirportInfoResponse>>() {
+                    }
+            );
 
-        List<AirportInfoResponse> airports = response.getBody();
-        if (airports == null || airports.isEmpty()) {
-            log.warn("No airport found for ICAO code: {}", icaoCode);
+            List<AirportInfoResponse> airports = response.getBody();
+            if (airports == null || airports.isEmpty()) {
+                log.warn("No airport found for ICAO code: {}", icaoCode);
+                return null;
+            }
+
+            return airports.getFirst();
+        } catch (Exception e) {
+            log.error("Error calling Aviation Weather API for airport {}: {}", icaoCode, e.getMessage());
             return null;
         }
-
-        return airports.getFirst();
     }
 
     public StationInfoResponse getStationInfo(String stationId) {
@@ -59,21 +64,26 @@ public class AviationWeatherClient {
 
         log.debug("Calling Aviation Weather API for station: {}", stationId);
 
-        ResponseEntity<List<StationInfoResponse>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<StationInfoResponse>>() {
-                }
-        );
+        try {
+            ResponseEntity<List<StationInfoResponse>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<StationInfoResponse>>() {
+                    }
+            );
 
-        List<StationInfoResponse> stations = response.getBody();
-        if (stations == null || stations.isEmpty()) {
-            log.warn("No station found for ID: {}", stationId);
+            List<StationInfoResponse> stations = response.getBody();
+            if (stations == null || stations.isEmpty()) {
+                log.warn("No station found for ID: {}", stationId);
+                return null;
+            }
+
+            return stations.getFirst();
+        } catch (Exception e) {
+            log.error("Error calling Aviation Weather API for station {}: {}", stationId, e.getMessage());
             return null;
         }
-
-        return stations.getFirst();
     }
 
     public List<StationInfoResponse> getStationsInBoundingBox(double minLat, double minLon, double maxLat, double maxLon) {

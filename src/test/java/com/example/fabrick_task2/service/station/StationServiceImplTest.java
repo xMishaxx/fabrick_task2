@@ -1,6 +1,7 @@
 package com.example.fabrick_task2.service.station;
 
 import com.example.fabrick_task2.client.AviationWeatherClient;
+import com.example.fabrick_task2.exception.ResourceNotFoundException;
 import com.example.fabrick_task2.model.Airport;
 import com.example.fabrick_task2.model.external.AirportInfoResponse;
 import com.example.fabrick_task2.model.external.StationInfoResponse;
@@ -94,10 +95,9 @@ class StationServiceImplTest {
 
         when(aviationWeatherClient.getStationInfo(stationId)).thenReturn(null);
 
-        List<Airport> result = stationService.findClosestAirports(stationId, closestBy);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertThrows(ResourceNotFoundException.class, () -> {
+            stationService.findClosestAirports(stationId, closestBy);
+        });
 
         verify(aviationWeatherClient, times(1)).getStationInfo(stationId);
         verify(aviationWeatherClient, never()).getAirportsInBoundingBox(

@@ -1,6 +1,7 @@
 package com.example.fabrick_task2.service.station;
 
 import com.example.fabrick_task2.client.AviationWeatherClient;
+import com.example.fabrick_task2.exception.ResourceNotFoundException;
 import com.example.fabrick_task2.model.Airport;
 import com.example.fabrick_task2.model.external.AirportInfoResponse;
 import com.example.fabrick_task2.model.external.StationInfoResponse;
@@ -26,7 +27,7 @@ public class StationServiceImpl implements StationService {
         StationInfoResponse stationInfo = aviationWeatherClient.getStationInfo(stationId);
         if (stationInfo == null) {
             log.warn("Station not found: {}", stationId);
-            return Collections.emptyList();
+            throw new ResourceNotFoundException("Station not found with ID: " + stationId);
         }
 
         log.debug("Station found: {} at lat={}, lon={}", stationId, stationInfo.getLat(), stationInfo.getLon());
