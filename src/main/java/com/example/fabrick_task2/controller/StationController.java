@@ -1,6 +1,7 @@
 package com.example.fabrick_task2.controller;
 
 import com.example.fabrick_task2.model.Airport;
+import com.example.fabrick_task2.model.error.ErrorResponse;
 import com.example.fabrick_task2.service.station.StationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,12 +39,22 @@ public class StationController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Station not found",
-                    content = @Content
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "502",
                     description = "Error communicating with Aviation Weather API",
-                    content = @Content
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "503",
+                    description = "Service unavailable - unable to access external API",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     @GetMapping("/{stationId}/airports")
