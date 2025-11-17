@@ -5,6 +5,7 @@ import com.example.fabrick_task2.model.external.AirportInfoResponse;
 import com.example.fabrick_task2.model.external.StationInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class AviationWeatherClient {
     private final RestTemplate restTemplate;
     private final AviationWeatherApiProperties apiProperties;
 
+    @Cacheable(value = "airportInfo", key = "#icaoCode")
     public AirportInfoResponse getAirportInfo(String icaoCode) {
         String url = UriComponentsBuilder.fromHttpUrl(apiProperties.getBaseUrl())
                 .path("/airport")
@@ -55,6 +57,7 @@ public class AviationWeatherClient {
         }
     }
 
+    @Cacheable(value = "stationInfo", key = "#stationId")
     public StationInfoResponse getStationInfo(String stationId) {
         String url = UriComponentsBuilder.fromHttpUrl(apiProperties.getBaseUrl())
                 .path("/stationinfo")
@@ -86,6 +89,7 @@ public class AviationWeatherClient {
         }
     }
 
+    @Cacheable(value = "stationsBbox", key = "#minLat + '_' + #minLon + '_' + #maxLat + '_' + #maxLon")
     public List<StationInfoResponse> getStationsInBoundingBox(double minLat, double minLon, double maxLat, double maxLon) {
         String bbox = String.format("%f,%f,%f,%f", minLat, minLon, maxLat, maxLon);
 
@@ -117,6 +121,7 @@ public class AviationWeatherClient {
         return response.getBody();
     }
 
+    @Cacheable(value = "airportsBbox", key = "#minLat + '_' + #minLon + '_' + #maxLat + '_' + #maxLon")
     public List<AirportInfoResponse> getAirportsInBoundingBox(double minLat, double minLon, double maxLat, double maxLon) {
         String bbox = String.format("%f,%f,%f,%f", minLat, minLon, maxLat, maxLon);
 

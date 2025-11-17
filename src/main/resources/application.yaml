@@ -13,10 +13,18 @@ application:
   aviation-weather:
     api:
       base-url: https://aviationweather.gov/api/data
+  cache:
+    caffeine:
+      info-ttl-hours: 2
+      info-max-size: 1000
+      bbox-ttl-minutes: 30
+      bbox-max-size: 500
 
 logging:
   level:
     com.example.fabrick_task2: DEBUG
     org.springframework.web.client: DEBUG
+    org.springframework.cache: TRACE
+    com.github.benmanes.caffeine: DEBUG
   pattern:
     level: "%5p [%spring.application.name]"
