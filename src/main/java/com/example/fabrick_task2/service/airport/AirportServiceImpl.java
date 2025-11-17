@@ -1,7 +1,6 @@
 package com.example.fabrick_task2.service.airport;
 
 import com.example.fabrick_task2.client.AviationWeatherClient;
-import com.example.fabrick_task2.exception.ResourceNotFoundException;
 import com.example.fabrick_task2.model.Station;
 import com.example.fabrick_task2.model.external.AirportInfoResponse;
 import com.example.fabrick_task2.model.external.StationInfoResponse;
@@ -25,10 +24,6 @@ public class AirportServiceImpl implements AirportService {
         log.info("Finding closest stations for airport: {} with closestBy: {}", airportId, closestBy);
 
         AirportInfoResponse airportInfo = aviationWeatherClient.getAirportInfo(airportId);
-        if (airportInfo == null) {
-            log.warn("Airport not found: {}", airportId);
-            throw new ResourceNotFoundException("Airport not found with ID: " + airportId);
-        }
 
         log.debug("Airport found: {} at lat={}, lon={}", airportId, airportInfo.getLat(), airportInfo.getLon());
 

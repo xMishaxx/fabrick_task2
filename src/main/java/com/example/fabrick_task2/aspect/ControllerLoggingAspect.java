@@ -76,7 +76,7 @@ public class ControllerLoggingAspect {
                         String responseBody = objectMapper.writeValueAsString(responseEntity.getBody());
                         log.info("Response Body: {}", responseBody);
                     } catch (Exception e) {
-                        log.warn("Unable to serialize response body", e);
+                        log.warn("Unable to serialize response body: {}", e.getMessage(), e);
                     }
                 } else {
                     log.info("Response: {}", response);
