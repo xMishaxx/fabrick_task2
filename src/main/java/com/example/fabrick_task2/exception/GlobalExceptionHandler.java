@@ -1,6 +1,7 @@
 package com.example.fabrick_task2.exception;
 
 import com.example.fabrick_task2.model.error.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -40,6 +42,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceAccessException(ResourceAccessException ex, WebRequest request) {
         log.error("Resource access error: {}", ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, "Service temporarily unavailable", request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+        log.error("Validation error: {}", ex.getMessage(), ex);
+        String message = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getMessage())
+                .collect(Collectors.joining(", "));
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(Exception.class)
