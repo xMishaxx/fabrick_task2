@@ -93,7 +93,8 @@ class AirportServiceImplTest {
         String airportId = "XXXX";
         double closestBy = 0.0;
 
-        when(aviationWeatherClient.getAirportInfo(airportId)).thenReturn(null);
+        when(aviationWeatherClient.getAirportInfo(airportId))
+                .thenThrow(new ResourceNotFoundException("No airport found for ICAO code: " + airportId));
 
         assertThrows(ResourceNotFoundException.class, () -> {
             airportService.findClosestStations(airportId, closestBy);

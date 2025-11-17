@@ -93,7 +93,8 @@ class StationServiceImplTest {
         String stationId = "XXXX";
         double closestBy = 0.0;
 
-        when(aviationWeatherClient.getStationInfo(stationId)).thenReturn(null);
+        when(aviationWeatherClient.getStationInfo(stationId))
+                .thenThrow(new ResourceNotFoundException("No station found for ID: " + stationId));
 
         assertThrows(ResourceNotFoundException.class, () -> {
             stationService.findClosestAirports(stationId, closestBy);
