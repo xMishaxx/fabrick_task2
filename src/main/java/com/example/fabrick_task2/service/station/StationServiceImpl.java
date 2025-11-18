@@ -2,8 +2,10 @@ package com.example.fabrick_task2.service.station;
 
 import com.example.fabrick_task2.client.AviationWeatherClient;
 import com.example.fabrick_task2.model.Airport;
+import com.example.fabrick_task2.model.BoundingBox;
 import com.example.fabrick_task2.model.external.AirportInfoResponse;
 import com.example.fabrick_task2.model.external.StationInfoResponse;
+import com.example.fabrick_task2.util.BoundingBoxCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,15 +29,10 @@ public class StationServiceImpl implements StationService {
 
         log.debug("Station found: {} at lat={}, lon={}", stationId, stationInfo.getLat(), stationInfo.getLon());
 
-        double minLat = stationInfo.getLat() - closestBy;
-        double maxLat = stationInfo.getLat() + closestBy;
-        double minLon = stationInfo.getLon() - closestBy;
-        double maxLon = stationInfo.getLon() + closestBy;
-
-        log.debug("Bounding box: minLat={}, minLon={}, maxLat={}, maxLon={}", minLat, minLon, maxLat, maxLon);
+        BoundingBox bbox = BoundingBoxCalculator.calculateBBox(stationInfo.getLat(), stationInfo.getLon(), closestBy);
 
         List<AirportInfoResponse> airportsInBox = aviationWeatherClient.getAirportsInBoundingBox(
-                minLat, minLon, maxLat, maxLon
+                bbox.getMinLatitude(), bbox.getMinLongitude(), bbox.getMaxLatitude(), bbox.getMaxLongitude()
         );
 
         if (airportsInBox == null || airportsInBox.isEmpty()) {
