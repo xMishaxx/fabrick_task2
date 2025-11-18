@@ -1,0 +1,222 @@
+openapi: 3.0.1
+info:
+  title: Fabrick Task 2 - Airports and Stations API
+  description: REST API for finding closest observation stations to airports and vice versa, using Aviation Weather Center API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8090
+    description: Local development server
+tags:
+  - name: Airports
+    description: Airport and observation stations API
+  - name: Stations
+    description: Observation stations and airports API
+paths:
+  /api/fabrick/v1.0/airports/{airportId}/stations:
+    get:
+      tags:
+        - Airports
+      summary: Find closest observation stations
+      description: Given an airport ID, finds all the closest observation stations within a bounding box
+      operationId: getClosestStations
+      parameters:
+        - name: airportId
+          in: path
+          description: ICAO airport code (e.g., KDEN, KARR)
+          required: true
+          schema:
+            type: string
+          example: KDEN
+        - name: closestBy
+          in: query
+          description: Bounding box modifier in degrees (default 0.0)
+          required: false
+          schema:
+            type: number
+            format: double
+            default: 0.0
+          example: 1.0
+      responses:
+        '200':
+          description: Successfully retrieved list of stations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+              example:
+                - id: KAFF
+                  site: Air Force Academy Arfld
+                  state: CO
+                  country: US
+                  latitude: 38.971
+                  longitude: -104.816
+                  elevation: 2003
+        '404':
+          description: Airport not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: "2025-11-14T17:00:00"
+                status: 404
+                error: Not Found
+                message: "Airport not found with ID: INVALID"
+        '502':
+          description: Error communicating with Aviation Weather API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/fabrick/v1.0/stations/{stationId}/airports:
+    get:
+      tags:
+        - Stations
+      summary: Find closest airports
+      description: Given a station ID, finds all the closest airports within a bounding box
+      operationId: getClosestAirports
+      parameters:
+        - name: stationId
+          in: path
+          description: Station ID (ICAO code, e.g., KAFF, KCOS)
+          required: true
+          schema:
+            type: string
+          example: KAFF
+        - name: closestBy
+          in: query
+          description: Bounding box modifier in degrees (default 0.0)
+          required: false
+          schema:
+            type: number
+            format: double
+            default: 0.0
+          example: 1.0
+      responses:
+        '200':
+          description: Successfully retrieved list of airports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+              example:
+                - id: KDEN
+                  name: DENVER INTL
+                  state: CO
+                  country: US
+                  latitude: 39.8617
+                  longitude: -104.6732
+                  elevation: 1656.6
+        '404':
+          description: Station not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                timestamp: "2025-11-14T17:00:00"
+                status: 404
+                error: Not Found
+                message: "Station not found with ID: INVALID"
+        '502':
+          description: Error communicating with Aviation Weather API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Airport:
+      type: object
+      description: Airport information
+      properties:
+        id:
+          type: string
+          description: Airport ID (ICAO code)
+          example: KDEN
+        name:
+          type: string
+          description: Airport name
+          example: DENVER INTL
+        state:
+          type: string
+          description: State code
+          example: CO
+        country:
+          type: string
+          description: Country code
+          example: US
+        latitude:
+          type: number
+          format: double
+          description: Latitude in degrees
+          example: 39.8617
+        longitude:
+          type: number
+          format: double
+          description: Longitude in degrees
+          example: -104.6732
+        elevation:
+          type: number
+          format: double
+          description: Elevation in meters
+          example: 1656.6
+    Station:
+      type: object
+      description: Observation station information
+      properties:
+        id:
+          type: string
+          description: Station ID (ICAO code)
+          example: KAFF
+        site:
+          type: string
+          description: Station site name
+          example: Air Force Academy Arfld
+        state:
+          type: string
+          description: State code
+          example: CO
+        country:
+          type: string
+          description: Country code
+          example: US
+        latitude:
+          type: number
+          format: double
+          description: Latitude in degrees
+          example: 38.971
+        longitude:
+          type: number
+          format: double
+          description: Longitude in degrees
+          example: -104.816
+        elevation:
+          type: integer
+          format: int32
+          description: Elevation in meters
+          example: 2003
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        timestamp:
+          type: string
+          description: Timestamp of the error
+          example: "2025-11-14T17:00:00"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 404
+        error:
+          type: string
+          description: Error type
+          example: Not Found
+        message:
+          type: string
+          description: Error message
+          example: "Airport not found with ID: INVALID"
